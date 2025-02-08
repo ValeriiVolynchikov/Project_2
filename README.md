@@ -1,2 +1,3 @@
-# OOP_2
-homework
+# Project_1
+
+Поиск вакансий
