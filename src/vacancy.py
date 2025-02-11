@@ -1,4 +1,5 @@
 # src/vacancy.py
+from src.helpers import clean_html
 
 class Vacancy:
     """Класс для представления вакансии."""
@@ -39,13 +40,21 @@ class Vacancy:
             return "Зарплата не указана"
         except ValueError:
             return "Зарплата не указана"
+    # def _validate_salary(salary: Union[float, str]) -> Union[float, str]:
+    #     if isinstance(salary, str) and salary.lower() == "зарплата не указана":
+    #         return salary
+    #     if isinstance(salary, (int, float)):
+    #         return float(salary)
+    #     return "Зарплата не указана"
 
     @staticmethod
-    def _validate_description(description: str) -> str:
+    def _validate_description(description: str | None) -> str:
         """Приватный метод валидации описания вакансии."""
-        if not description:
-            return "Описание отсутствует."
-        return description
+        # if not description:
+        #     return "Описание отсутствует."
+        # return description
+        cleaned_description = clean_html(description or "")  # Очищаем описание от HTML-тегов
+        return cleaned_description if cleaned_description else "Описание отсутствует"
 
     def to_dict(self) -> dict:
         """

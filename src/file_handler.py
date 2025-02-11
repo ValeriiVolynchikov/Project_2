@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 import json
 from typing import List, Dict
+from src.helpers import clean_html
 
 
 class FileHandler(ABC):
@@ -59,6 +60,10 @@ class JSONFileHandler:
         :param vacancy_data: Словарь с данными о вакансии.
         """
         data = self._load_data()
+
+        # Очищаем описание перед добавлением
+        vacancy_data["description"] = clean_html(vacancy_data.get("description", ""))
+
         if vacancy_data not in data:  # Проверяем отсутствие дублей
             data.append(vacancy_data)
             self._save_data(data)
@@ -82,14 +87,23 @@ class JSONFileHandler:
         :return: Список словарей с отфильтрованными вакансиями.
         """
         data = self._load_data()
-        if not data:
+        if not data or not isinstance(data, list):
             return []
 
+        # return [
+        #     v for v in data if isinstance(v, dict) and any(
+        #         word.lower() in (v.get("description", "Описание отсутствует") or "Описание отсутствует").lower()
+        #         for word in filter_words
+        #     )
+        # ]
         return [
             v for v in data if isinstance(v, dict) and any(
-                word.lower() in v.get("description", "").lower() for word in filter_words
+                word.lower() in (
+                    clean_html(v.get("description", "Описание отсутствует") or "Описание отсутствует")).lower()
+                for word in filter_words
             )
         ]
+
     def _save_data(self, data: List[Dict]) -> None:
         """
         Сохраняет данные в JSON-файл.
