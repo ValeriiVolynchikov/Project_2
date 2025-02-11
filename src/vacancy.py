@@ -1,4 +1,3 @@
-# src/vacancy.py
 from src.helpers import clean_html
 
 class Vacancy:
@@ -40,12 +39,6 @@ class Vacancy:
             return "Зарплата не указана"
         except ValueError:
             return "Зарплата не указана"
-    # def _validate_salary(salary: Union[float, str]) -> Union[float, str]:
-    #     if isinstance(salary, str) and salary.lower() == "зарплата не указана":
-    #         return salary
-    #     if isinstance(salary, (int, float)):
-    #         return float(salary)
-    #     return "Зарплата не указана"
 
     @staticmethod
     def _validate_description(description: str | None) -> str:
@@ -76,14 +69,6 @@ class Vacancy:
     def salary(self) -> float:
         return self._salary
 
-    # def __repr__(self) -> str:     #  это работало до внесения зарплат
-    #     return f"Vacancy(title={self._title!r}, link={self._link!r}, salary={self._salary}, description={self._description!r})"
-    #
-    # def __lt__(self, other: 'Vacancy') -> bool:
-    #     return self._salary < other.salary
-    #
-    # def __gt__(self, other: 'Vacancy') -> bool:
-    #     return self._salary > other.salary
     def __str__(self) -> str:
         """Строковое представление объекта Vacancy."""
         return f"{self._title}, {self._salary} руб.\n{self._description}\nСсылка: {self._link}"

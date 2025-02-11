@@ -1,5 +1,3 @@
-# tests/test_api_handler.py
-
 import pytest
 from src.api_handler import HeadHunterAPI
 
@@ -11,13 +9,19 @@ def hh_api():
 
 def test_get_vacancies(hh_api):
     """Тестирует метод get_vacancies()."""
+    hh_api = HeadHunterAPI()
     vacancies = hh_api.get_vacancies("Python")
+
+    # Проверяем, что результат — это список
     assert isinstance(vacancies, list)
-    assert len(vacancies) > 0
+    assert len(vacancies) > 0  # Убедимся, что есть хотя бы одна вакансия
+
+    # Проверяем структуру каждой вакансии
     for vacancy in vacancies:
-        assert "name" in vacancy
-        assert "alternate_url" in vacancy
-        assert "snippet" in vacancy
+        assert "title" in vacancy  # Вместо 'name' используем 'title'
+        assert "link" in vacancy
+        assert "salary" in vacancy
+        assert "description" in vacancy
 
 
 def test_get_vacancies_with_salary(hh_api):

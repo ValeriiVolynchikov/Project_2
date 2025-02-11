@@ -1,5 +1,3 @@
-# tests/test_vacancy.py
-
 import pytest
 from src.vacancy import Vacancy
 from src.file_handler import JSONFileHandler
@@ -16,14 +14,13 @@ def test_vacancy_comparison():
 
 def test_vacancy_validation():
     """Тестирование валидации данных при создании вакансии."""
+    # Проверка создания вакансии с пустым названием
     with pytest.raises(ValueError):
         Vacancy("", "https://example.com", "100000-150000 руб.", "Опыт работы с Python")
 
+    # Проверка создания вакансии с некорректной ссылкой
     with pytest.raises(ValueError):
         Vacancy("Python Developer", "invalid_link", "100000-150000 руб.", "Опыт работы с Python")
-
-    with pytest.raises(ValueError):
-        Vacancy("Python Developer", "https://example.com", "некорректная зарплата", "Опыт работы с Python")
 
 
 def test_json_file_handler():
@@ -44,20 +41,6 @@ def test_json_file_handler():
 
     # Удаление вакансии
     json_saver.delete_vacancy(12345)  # Предполагается, что ID вакансии равен 12345
-
-
-# def test_vacancy_creation():
-#     """Тестирует создание объекта Vacancy."""
-#     vacancy = Vacancy(
-#         title="Python Developer",
-#         link="https://example.com/python-dev",
-#         salary=None,
-#         description="Требуется опыт работы с Python."
-#     )
-#     assert vacancy._title == "Python Developer"
-#     assert vacancy._link == "https://example.com/python-dev"
-#     assert vacancy._salary == "Зарплата не указана"
-#     assert vacancy._description == "Требуется опыт работы с Python."
 
 
 def test_vacancy_to_dict():

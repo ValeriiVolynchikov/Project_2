@@ -2122,5 +2122,47 @@
         "link": "https://hh.ru/vacancy/117056930",
         "salary": "Зарплата не указана",
         "description": "Законченное высшее техническое образование. Владение Python и основных библиотек аналитика Pandas, Numpy, Matplotlib, Seaborn. Навыки использования Git. Опыт работы с..."
+    },
+    {
+        "title": "Python Developer",
+        "link": "https://example.com",
+        "salary": 100000,
+        "description": "Опыт работы с Python"
+    },
+    {
+        "title": "BI-аналитик",
+        "link": "https://hh.ru/vacancy/116075098",
+        "salary": 150000,
+        "description": "...PostgreSQL, DWH, ClickHouse. Умение строить дашборды с использованием любой из BI-платформ (Power BI, Tableau, Metabase). Языки запросов (SQL, Python)."
+    },
+    {
+        "title": "Junior+ Product Analyst",
+        "link": "https://hh.ru/vacancy/117111304",
+        "salary": "Зарплата не указана",
+        "description": "Опыт в продуктовой аналитике от одного года. Отличные знания SQL (желательно Greenplum, Clickhouse). Практический опыт дизайна, запуска и последующего анализа..."
+    },
+    {
+        "title": "Software Engineer",
+        "link": "https://hh.ru/vacancy/117091064",
+        "salary": 2000,
+        "description": "Предпочтительно: Выпускник топовых казахстанских и зарубежных вузов - Nazarbayev University, KIMEP, etc. Опыт разработки с Python/Django/DRF. Опыт работы с..."
+    },
+    {
+        "title": "Аналитик данных",
+        "link": "https://hh.ru/vacancy/117109212",
+        "salary": null,
+        "description": "Владение SQL (Oracle, Postgres, Clickhouse), Python для анализа данных, Jira+Confluence, Git или готовность их освоить. Владение cron, airflow будет преимуществом."
+    },
+    {
+        "title": "Стажер Data Analyst/Data Engineer",
+        "link": "https://hh.ru/vacancy/116509895",
+        "salary": "Зарплата не указана",
+        "description": "Опыт работы в Linux. Опыт работы с Python (Pandas). Знание технологий AirFlow. Опыт участия в учебных проектах или хакатонах, связанных..."
+    },
+    {
+        "title": "Младший аналитик данных",
+        "link": "https://hh.ru/vacancy/117090270",
+        "salary": "Зарплата не указана",
+        "description": "BI: Superset (можно опыт в Power BI, Tableau). Excel: базовый уровень. Dags: Airflow. Опыт работы с Gitlab."
     }
 ]

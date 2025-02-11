@@ -1,5 +1,3 @@
-# src/file_handler.py
-
 from abc import ABC, abstractmethod
 import json
 from typing import List, Dict
@@ -36,23 +34,16 @@ class JSONFileHandler:
         Загружает данные из JSON-файла.
         :return: Список словарей с данными о вакансиях.
         """
-        # try:
-        #     with open(self._filename, "r", encoding="utf-8") as file:
-        #         data = json.load(file)
-        #         if not isinstance(data, list):  # Проверяем, что данные являются списком
-        #             return []
-        #         return data
-        # except FileNotFoundError:
-        #     return []  # Возвращаем пустой список, если файл не найден
-        # except json.JSONDecodeError:
-        #     print(f"Ошибка чтения файла {self._filename}: поврежденный JSON.")
-        #     return []  # Возвращаем пустой список, если JSON поврежден
-        """Загрузка данных из JSON-файла."""
         try:
             with open(self._filename, "r", encoding="utf-8") as file:
-                return json.load(file)
+                content = file.read()
+                if not content:  # Проверка на пустой файл
+                    return []
+                return json.loads(content)
         except FileNotFoundError:
             return []
+        except json.JSONDecodeError:
+            return []  # Обработка ошибок декодирования JSON
 
     def add_vacancy(self, vacancy_data: Dict) -> None:
         """
@@ -78,7 +69,7 @@ class JSONFileHandler:
         filtered_data = [v for v in data if v.get("id") != vacancy_id]
         if len(filtered_data) < len(data):
             print(f"Вакансия с ID {vacancy_id} успешно удалена.")
-        self._save_data(filtered_data)
+            self._save_data(filtered_data)  # Сохраняем обновленный список
 
     def filter_vacancies(self, filter_words: list) -> List:
         """
@@ -90,12 +81,6 @@ class JSONFileHandler:
         if not data or not isinstance(data, list):
             return []
 
-        # return [
-        #     v for v in data if isinstance(v, dict) and any(
-        #         word.lower() in (v.get("description", "Описание отсутствует") or "Описание отсутствует").lower()
-        #         for word in filter_words
-        #     )
-        # ]
         return [
             v for v in data if isinstance(v, dict) and any(
                 word.lower() in (
