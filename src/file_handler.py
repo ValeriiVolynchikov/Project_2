@@ -104,6 +104,20 @@ class JSONFileHandler:
             )
         ]
 
+    def filter_vacancies_by_salary(self, salary_range: tuple) -> List[Dict]:
+        """
+        Фильтрует вакансии по указанному диапазону зарплат.
+        :param salary_range: Кортеж (min_salary, max_salary).
+        :return: Список отфильтрованных вакансий.
+        """
+        data = self._load_data()
+        min_salary, max_salary = salary_range
+        return [
+            v for v in data
+            if isinstance(v["salary"], (int, float)) and min_salary <= v["salary"] <= max_salary
+        ]
+
+
     def _save_data(self, data: List[Dict]) -> None:
         """
         Сохраняет данные в JSON-файл.

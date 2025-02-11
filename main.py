@@ -85,6 +85,8 @@ def user_interaction():
     top_n = int(input("Введите количество вакансий для вывода в топ N: "))
     filter_words_input = input("Введите ключевые слова для фильтрации вакансий (через пробел): ")
     filter_words = filter_words_input.split()
+    salary_range_input = input("Введите диапазон зарплат (минимальная-максимальная): ")  # Новый параметр
+    salary_range = parse_salary_range(salary_range_input)  # Парсим диапазон зарплат
 
     hh_api = HeadHunterAPI()
     json_saver = JSONFileHandler()
@@ -111,11 +113,11 @@ def user_interaction():
     filtered_vacancies = json_saver.filter_vacancies(filter_words)
 
     # Сортировка и вывод результатов
-    sorted_vacancies = sorted(
-        filtered_vacancies,
-        key=lambda v: v["salary"] if isinstance(v["salary"], (int, float)) else 0,
-        reverse=True
-    )[:top_n]
+    # sorted_vacancies = sorted(      # это работала до зарплат!!!!
+    #     filtered_vacancies,
+    #     key=lambda v: v["salary"] if isinstance(v["salary"], (int, float)) else 0,
+    #     reverse=True
+    # )[:top_n]
 
     # if not sorted_vacancies:
     #     print("По вашему запросу вакансий не найдено.")
@@ -127,12 +129,46 @@ def user_interaction():
     #               f"Зарплата: {vacancy['salary']} руб.\n"
     #               f"Описание: {vacancy['description']}\n"
     #               f"{'-' * 40}")
+    ranged_vacancies = filter_vacancies_by_salary(filtered_vacancies, salary_range)  # Фильтруем по зарплате
+    sorted_vacancies = sorted(
+        ranged_vacancies,
+        key=lambda v: v["salary"] if isinstance(v["salary"], (int, float)) else 0,
+        reverse=True
+    )[:top_n]
+
     if   not sorted_vacancies:
         print("По вашему запросу вакансий не найдено.")
 
     else:
         print(f"Топ {len(sorted_vacancies)} вакансий:")
         display_vacancies(sorted_vacancies)  # Вызов функции для отображения вакансий
+
+
+def parse_salary_range(salary_range_input: str) -> tuple:
+    """
+    Парсит диапазон зарплат из строки формата 'минимальная-максимальная'.
+    :param salary_range_input: Строка с диапазоном зарплат.
+    :return: Кортеж (min_salary, max_salary).
+    """
+    try:
+        min_salary, max_salary = map(float, salary_range_input.split("-"))
+        return min_salary, max_salary
+    except ValueError:
+        print("Некорректный формат диапазона зарплат. Используйте формат: минимум-максимум")
+        return 0, float('inf')  # Если формат некорректный, используем весь диапазон
+
+def filter_vacancies_by_salary(vacancies: list, salary_range: tuple) -> list:
+    """
+    Фильтрует вакансии по указанному диапазону зарплат.
+    :param vacancies: Список словарей с данными о вакансиях.
+    :param salary_range: Кортеж (min_salary, max_salary).
+    :return: Список отфильтрованных вакансий.
+    """
+    min_salary, max_salary = salary_range
+    return [
+        v for v in vacancies
+        if isinstance(v["salary"], (int, float)) and min_salary <= v["salary"] <= max_salary
+    ]
 
 
 if __name__ == "__main__":

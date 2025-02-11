@@ -76,11 +76,26 @@ class Vacancy:
     def salary(self) -> float:
         return self._salary
 
-    def __repr__(self) -> str:
-        return f"Vacancy(title={self._title!r}, link={self._link!r}, salary={self._salary}, description={self._description!r})"
+    # def __repr__(self) -> str:     #  это работало до внесения зарплат
+    #     return f"Vacancy(title={self._title!r}, link={self._link!r}, salary={self._salary}, description={self._description!r})"
+    #
+    # def __lt__(self, other: 'Vacancy') -> bool:
+    #     return self._salary < other.salary
+    #
+    # def __gt__(self, other: 'Vacancy') -> bool:
+    #     return self._salary > other.salary
+    def __str__(self) -> str:
+        """Строковое представление объекта Vacancy."""
+        return f"{self._title}, {self._salary} руб.\n{self._description}\nСсылка: {self._link}"
 
     def __lt__(self, other: 'Vacancy') -> bool:
-        return self._salary < other.salary
+        """Магический метод для сравнения вакансий по зарплате (<)."""
+        if isinstance(self._salary, str) or isinstance(other._salary, str):
+            return False
+        return self._salary < other._salary
 
     def __gt__(self, other: 'Vacancy') -> bool:
-        return self._salary > other.salary
+        """Магический метод для сравнения вакансий по зарплате (>)."""
+        if isinstance(self._salary, str) or isinstance(other._salary, str):
+            return False
+        return self._salary > other._salary

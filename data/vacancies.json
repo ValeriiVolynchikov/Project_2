@@ -2020,5 +2020,107 @@
         "link": "https://hh.ru/vacancy/108607788",
         "salary": 100000,
         "description": "Базовое знание Python, Git, Linux. Понимание методологии тестирования: функциональное, интеграционное, нагрузочное. Желание развиваться в области автоматизированного тестирования. Владение английским языком..."
+    },
+    {
+        "title": "Middle/Senior QA Engineer",
+        "link": "https://hh.ru/vacancy/117105979",
+        "salary": "Зарплата не указана",
+        "description": "...и опыт работы с ними. Будет плюсом: Опыт работы с Docker, Kubernetes, OpenShift; Базовые навыки программирования (Python, JS или др.)."
+    },
+    {
+        "title": "Разработчик Python",
+        "link": "https://hh.ru/vacancy/116852903",
+        "salary": "Зарплата не указана",
+        "description": "Готовы рассматривать кандидатов с минимальным опытом и после окончания курсов. Опыт работы с Python 3 (обязательно знание pandas, numpy, plotly..."
+    },
+    {
+        "title": "Тестировщик",
+        "link": "https://hh.ru/vacancy/116075425",
+        "salary": "Зарплата не указана",
+        "description": "Коммуникабельность, умение работать в команде. Базовые знания Python. Навыки работы с Docker. Знакомство с инструментами CI/CD-автоматизации Jenkins, GitLab..."
+    },
+    {
+        "title": "Python разработчик стажер",
+        "link": "https://hh.ru/vacancy/117109370",
+        "salary": "Зарплата не указана",
+        "description": "...библиотеками Python: Pandas, MathPlotLib. Будет плюсом: O Опыт работы с фреймворками FastApi/Flask. O Опыт работы с указанными библиотеками Python..."
+    },
+    {
+        "title": "Python-разработчик (MLOps)",
+        "link": "https://hh.ru/vacancy/116037891",
+        "salary": "Зарплата не указана",
+        "description": "Хорошее знание Python (стандартные и ML библиотеки, умение применять ООП). Понимание принципов построения моделей машинного обучения. Знание SQL."
+    },
+    {
+        "title": "Python Developer Middle - Senior",
+        "link": "https://hh.ru/vacancy/116792064",
+        "salary": "Зарплата не указана",
+        "description": "Коммерческий опыт разработки от 2-ух лет. Уверенные знания и опыт работы с Python. Опыт работы с веб-фреймворками (Django..."
+    },
+    {
+        "title": "Инженер по тестированию (Middle+ QA engineer)",
+        "link": "https://hh.ru/vacancy/115271303",
+        "salary": "Зарплата не указана",
+        "description": "Знаешь основные технологии построения ПО и структуры программных комплексов. Знаешь принципы программирования, Python. Есть опыт работы с SQL."
+    },
+    {
+        "title": "ML Engineer",
+        "link": "https://hh.ru/vacancy/117100362",
+        "salary": "Зарплата не указана",
+        "description": "Ты отлично знаешь Python и его библиотеки для работы с данными (Pandas, Polars, scikit-learn, CatBoost, PyTorch, Transformers, Faiss)."
+    },
+    {
+        "title": "Junior Python Backend Developer",
+        "link": "https://hh.ru/vacancy/117102516",
+        "salary": "Зарплата не указана",
+        "description": "Базовые знания Python и опыт работы с фреймворками, например, Django или Flask. Опыт парсинга данных. Представление о том, как работают..."
+    },
+    {
+        "title": "Менеджер по управлению сбором просроченной задолженности и предотвращению фрода",
+        "link": "https://hh.ru/vacancy/117081841",
+        "salary": 275000,
+        "description": "Опыт не менее 3 лет в области взыскания задолженности и предотвращения мошенничества (МФО предпочтительнее). Высшее образование."
+    },
+    {
+        "title": "Python developer",
+        "link": "https://hh.ru/vacancy/117088847",
+        "salary": 170000,
+        "description": "Знание Python. Понимание ООП. Знание CI/CD. Умение работать с чужим кодом. Понимание работы Python и умение использовать различные типы..."
+    },
+    {
+        "title": "Системный администратор",
+        "link": "https://hh.ru/vacancy/117086993",
+        "salary": null,
+        "description": "Опыт настройки Cisco/Arista/Juniper или им подобных. Опыт работы системным администратором Linux-серверов от 2-х лет."
+    },
+    {
+        "title": "Младший специалист по Web разработке (Backend разработчик)",
+        "link": "https://hh.ru/vacancy/117091383",
+        "salary": "Зарплата не указана",
+        "description": "Знание программных кодов: Python, Django, FastAPI, Docker, Linux, PostgreSQL, JSON."
+    },
+    {
+        "title": "QA",
+        "link": "https://hh.ru/vacancy/117110028",
+        "salary": 110000,
+        "description": "Знание методик тест-дизайна, тестовой документации. Умение работать с devtools, postman, swagger. Будет плюсом: Опыт работы с Appium (python)."
+    },
+    {
+        "title": "Аналитик данных (маркетинг)",
+        "link": "https://hh.ru/vacancy/117104123",
+        "salary": "Зарплата не указана",
+        "description": "Знание SQL (вложенные запросы, обобщенные табличные выражения (СТЕ), оконные функции, джойны и группировки). Опыт разработки на Python с применением библиотек..."
+    },
+    {
+        "title": "Python Developer",
+        "link": "https://hh.ru/vacancy/117090426",
+        "salary": null,
+        "description": "4+ years of experience in Python (with expertise in asyncio, FastAPI). 2+ years of experience with MongoDB, Redis..."
+    },
+    {
+        "title": "Специалист по обработке данных исследований",
+        "link": "https://hh.ru/vacancy/117056930",
+        "salary": "Зарплата не указана",
+        "description": "Законченное высшее техническое образование. Владение Python и основных библиотек аналитика Pandas, Numpy, Matplotlib, Seaborn. Навыки использования Git. Опыт работы с..."
     }
 ]
