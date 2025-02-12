@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import json
-from typing import List, Dict
+from typing import List, Dict, Any
 from src.helpers import clean_html
 
 
@@ -29,7 +29,7 @@ class JSONFileHandler:
     def __init__(self, filename: str = "data/vacancies.json") -> None:
         self._filename = filename
 
-    def _load_data(self) -> List[Dict]:
+    def _load_data(self) -> list[dict[str, Any]]:
         """
         Загружает данные из JSON-файла.
         :return: Список словарей с данными о вакансиях.
@@ -71,7 +71,7 @@ class JSONFileHandler:
             print(f"Вакансия с ID {vacancy_id} успешно удалена.")
             self._save_data(filtered_data)  # Сохраняем обновленный список
 
-    def filter_vacancies(self, filter_words: list) -> List:
+    def filter_vacancies(self, filter_words: List[str]) -> List[Dict]:
         """
         Фильтрует вакансии по ключевому слову в описании.
         :param filter_word: Ключевое слово для фильтрации.
@@ -80,6 +80,10 @@ class JSONFileHandler:
         data = self._load_data()
         if not data or not isinstance(data, list):
             return []
+
+        # Если фильтр пуст, возвращаем все вакансии
+        if not filter_words:
+            return data
 
         return [
             v for v in data if isinstance(v, dict) and any(

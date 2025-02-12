@@ -1,10 +1,11 @@
 from src.api_handler import HeadHunterAPI
 from src.file_handler import JSONFileHandler
 from src.vacancy import Vacancy
-from src.helpers import clean_html
+from src.helpers import clean_html, parse_salary_range
 
 
-def display_vacancies(vacancies):
+def display_vacancies(vacancies: list) -> None:
+    """Отображает список вакансий."""
     for vacancy in vacancies:
         title = vacancy.get("title", "Без названия")
         link = vacancy.get("link", "Ссылка отсутствует")
@@ -18,14 +19,27 @@ def display_vacancies(vacancies):
         print("-" * 40)  # Разделитель
 
 
-def user_interaction():
+def user_interaction() -> None:
     """Функция для взаимодействия с пользователем через консоль."""
-    search_query = input("Введите поисковый запрос: ")
-    top_n = int(input("Введите количество вакансий для вывода в топ N: "))
-    filter_words_input = input("Введите ключевые слова для фильтрации вакансий (через пробел): ")
-    filter_words = filter_words_input.split()
-    salary_range_input = input("Введите диапазон зарплат (минимальная-максимальная): ")  # Новый параметр
-    salary_range = parse_salary_range(salary_range_input)  # Парсим диапазон зарплат
+
+    search_query = input("Введите поисковый запрос: ").strip()
+    if not search_query:
+        print("Поисковый запрос не может быть пустым.")
+        return
+
+    top_n_input = input("Введите количество вакансий для вывода в топ N: ").strip()
+    if not top_n_input.isdigit() or int(top_n_input) <= 0:
+        print("Некорректное значение для топ N. Ожидается положительное целое число.")
+        return
+    top_n = int(top_n_input)
+
+    filter_words_input = input("Введите ключевые слова для фильтрации вакансий (через пробел): ").strip()
+    filter_words = filter_words_input.split() if filter_words_input else []
+
+    salary_range_input = input("Введите диапазон зарплат (минимальная-максимальная): ").strip()
+    salary_range = parse_salary_range(salary_range_input)
+    if salary_range == (0, float('inf')):
+        print("Некорректный формат диапазона зарплат. Используйте формат: минимум-максимум")
 
     hh_api = HeadHunterAPI()
     json_saver = JSONFileHandler()
@@ -40,44 +54,29 @@ def user_interaction():
             link=vacancy["link"],
             salary=vacancy["salary"],
             description=vacancy["description"]
-        )
+        ).to_dict()
         for vacancy in hh_vacancies
     ]
 
     # Сохраняем вакансии в файл
-    for vacancy_data in hh_vacancies:
+    for vacancy_data in vacancies_list:
         json_saver.add_vacancy(vacancy_data)
 
-    # Фильтрация вакансий
+    # Фильтрация и сортировка вакансий
     filtered_vacancies = json_saver.filter_vacancies(filter_words)
-
-    ranged_vacancies = filter_vacancies_by_salary(filtered_vacancies, salary_range)  # Фильтруем по зарплате
+    ranged_vacancies = filter_vacancies_by_salary(filtered_vacancies, salary_range)
     sorted_vacancies = sorted(
         ranged_vacancies,
         key=lambda v: v["salary"] if isinstance(v["salary"], (int, float)) else 0,
         reverse=True
     )[:top_n]
 
-    if   not sorted_vacancies:
+    if not sorted_vacancies:
         print("По вашему запросу вакансий не найдено.")
-
     else:
         print(f"Топ {len(sorted_vacancies)} вакансий:")
-        display_vacancies(sorted_vacancies)  # Вызов функции для отображения вакансий
+        display_vacancies(sorted_vacancies)
 
-
-def parse_salary_range(salary_range_input: str) -> tuple:
-    """
-    Парсит диапазон зарплат из строки формата 'минимальная-максимальная'.
-    :param salary_range_input: Строка с диапазоном зарплат.
-    :return: Кортеж (min_salary, max_salary).
-    """
-    try:
-        min_salary, max_salary = map(float, salary_range_input.split("-"))
-        return min_salary, max_salary
-    except ValueError:
-        print("Некорректный формат диапазона зарплат. Используйте формат: минимум-максимум")
-        return 0, float('inf')  # Если формат некорректный, используем весь диапазон
 
 def filter_vacancies_by_salary(vacancies: list, salary_range: tuple) -> list:
     """

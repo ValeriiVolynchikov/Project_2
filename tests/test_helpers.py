@@ -1,5 +1,5 @@
 import pytest
-from src.helpers import clean_html
+from src.helpers import clean_html, parse_salary_range
 
 
 def test_clean_html():
@@ -14,3 +14,22 @@ def test_clean_html():
 
     # Проверка пустой строки
     assert clean_html("") == "Описание отсутствует"  # Ожидаемое поведение для пустой строки
+
+
+def test_parse_salary_range():
+    """Тестирует функцию parse_salary_range."""
+    # Корректный диапазон
+    result = parse_salary_range("100000-200000")
+    assert result == (100000.0, 200000.0)
+
+    # Некорректный формат
+    result = parse_salary_range("abc-def")
+    assert result == (0, float('inf'))
+
+    # Отсутствие разделителя
+    result = parse_salary_range("100000")
+    assert result == (0, float('inf'))
+
+    # Диапазон с отрицательными числами
+    result = parse_salary_range("-50000-150000")
+    assert result == (0, float('inf'))  # Функция должна игнорировать отрицательные числа <button class="citation-flag" data-index="1">
