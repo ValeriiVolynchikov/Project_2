@@ -8,6 +8,7 @@ class Vacancy:
     def __init__(self, title: str, link: str, salary: float | str, description: str) -> None:
         self._title = self._validate_title(title)
         self._link = self._validate_link(link)
+        # print(f"Вызов валидации зарплаты с параметром: {salary}")  # Добавленный вывод
         self._salary = self._validate_salary(salary)
         self._description = self._validate_description(description)
 
@@ -26,18 +27,58 @@ class Vacancy:
         return link
 
     @staticmethod
-    def _validate_salary(salary: str) -> float:
+    # def _validate_salary(salary: str) -> float:
+    #     """Приватный метод валидации зарплаты."""
+    #     if salary is None or isinstance(salary, str) and salary.lower() == "зарплата не указана":
+    #         return "Зарплата не указана"
+    #     if isinstance(salary, (int, float)):
+    #         return float(salary)
+    #     try:
+    #         # Попытка преобразования строки в число
+    #         return float(salary.split("-")[0].replace(" ", "").replace("руб.", ""))
+    #     except AttributeError:
+    #         return "Зарплата не указана"
+    #     except ValueError:
+    #         return "Зарплата не указана"
+    # def _validate_salary(salary: float | str) -> float:
+    #     """Приватный метод валидации зарплаты."""
+    #     if salary is None or isinstance(salary, str) and salary.lower() == "зарплата не указана":
+    #         raise ValueError("Зарплата не указана")
+    #
+    #     if isinstance(salary, (int, float)):
+    #         return float(salary)
+    #
+    #     try:
+    #         return float(salary.split("-")[0].replace(" ", "").replace("руб.", ""))
+    #     except (ValueError, AttributeError):
+    #         raise ValueError("Некорректный формат зарплаты.")
+    # def _validate_salary(salary: float | str) -> float:
+    #     """Приватный метод валидации зарплаты."""
+    #     # Обработка случая, когда зарплата не указана
+    #     if salary is None or (isinstance(salary, str) and salary.lower() == "зарплата не указана"):
+    #         raise ValueError("Зарплата не указана")
+    #
+    #     # Если зарплата уже в виде float, просто возвращаем ее
+    #     if isinstance(salary, (int, float)):
+    #         return float(salary)
+    #
+    #     # Обработка строки зарплаты
+    #     try:
+    #         # Попытка преобразования строки в число
+    #         return float(salary.split("-")[0].replace(" ", "").replace("руб.", ""))
+    #     except (ValueError, AttributeError):
+    #         raise ValueError("Некорректный формат зарплаты.")
+
+    def _validate_salary(salary: float | str | None) -> float | str:
         """Приватный метод валидации зарплаты."""
-        if salary is None or isinstance(salary, str) and salary.lower() == "зарплата не указана":
+        if salary is None or (isinstance(salary, str) and salary.lower() == "зарплата не указана"):
             return "Зарплата не указана"
         if isinstance(salary, (int, float)):
             return float(salary)
         try:
             # Попытка преобразования строки в число
             return float(salary.split("-")[0].replace(" ", "").replace("руб.", ""))
-        except AttributeError:
-            return "Зарплата не указана"
-        except ValueError:
+        except (ValueError, AttributeError):
             return "Зарплата не указана"
 
     @staticmethod
@@ -66,7 +107,7 @@ class Vacancy:
         return self._title
 
     @property
-    def salary(self) -> float:
+    def salary(self) -> float | str:
         return self._salary
 
     def __str__(self) -> str:

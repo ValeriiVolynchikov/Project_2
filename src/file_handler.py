@@ -39,7 +39,8 @@ class JSONFileHandler:
                 content = file.read()
                 if not content:  # Проверка на пустой файл
                     return []
-                return json.loads(content)
+                #return json.loads(content)
+                return json.loads(content) if content else []
         except FileNotFoundError:
             return []
         except json.JSONDecodeError:
