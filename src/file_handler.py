@@ -1,6 +1,7 @@
-from abc import ABC, abstractmethod
 import json
-from typing import List, Dict, Any
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List
+
 from src.helpers import clean_html
 
 
@@ -39,7 +40,6 @@ class JSONFileHandler:
                 content = file.read()
                 if not content:  # Проверка на пустой файл
                     return []
-                #return json.loads(content)
                 return json.loads(content) if content else []
         except FileNotFoundError:
             return []
@@ -52,6 +52,10 @@ class JSONFileHandler:
         :param vacancy_data: Словарь с данными о вакансии.
         """
         data = self._load_data()
+
+        # Проверяем наличие обязательного поля 'title'
+        if 'title' not in vacancy_data:
+            raise ValueError("Вакансия должна содержать поле 'title'.")
 
         # Очищаем описание перед добавлением
         vacancy_data["description"] = clean_html(vacancy_data.get("description", ""))
@@ -106,7 +110,6 @@ class JSONFileHandler:
             v for v in data
             if isinstance(v["salary"], (int, float)) and min_salary <= v["salary"] <= max_salary
         ]
-
 
     def _save_data(self, data: List[Dict]) -> None:
         """

@@ -1,16 +1,19 @@
-import pytest
 import json
+from typing import Any, Dict, List
 from unittest.mock import mock_open, patch
+
+import pytest
+
 from src.file_handler import JSONFileHandler
 
 
 @pytest.fixture
-def json_file_handler():
+def json_file_handler() -> JSONFileHandler:
     return JSONFileHandler("test_vacancies.json")
 
 
-def test_add_vacancy(json_file_handler):
-    vacancy_data = {
+def test_add_vacancy(json_file_handler: JSONFileHandler) -> None:
+    vacancy_data: Dict[str, Any] = {
         "id": 1,
         "title": "Python Developer",
         "link": "https://example.com",
@@ -27,8 +30,8 @@ def test_add_vacancy(json_file_handler):
         assert vacancy_data["description"] == "Описание вакансии"
 
 
-def test_delete_vacancy(json_file_handler):
-    vacancy_data = {
+def test_delete_vacancy(json_file_handler: JSONFileHandler) -> None:
+    vacancy_data: Dict[str, Any] = {
         "id": 1,
         "title": "Python Developer",
         "link": "https://example.com",
@@ -46,19 +49,19 @@ def test_delete_vacancy(json_file_handler):
         mock_save.assert_called_once_with([])  # Ожидаем, что после удаления списка вакансий будет пустым
 
 
-def test_filter_vacancies(json_file_handler):
+def test_filter_vacancies(json_file_handler: JSONFileHandler) -> None:
     mock_data = json.dumps([
         {"id": 1, "title": "Python Developer", "description": "Описание Python"},
         {"id": 2, "title": "Java Developer", "description": "Описание Java"}
     ])
 
     with patch("builtins.open", mock_open(read_data=mock_data)):
-        filtered_vacancies = json_file_handler.filter_vacancies(["Python"])
+        filtered_vacancies: List[Dict[str, Any]] = json_file_handler.filter_vacancies(["Python"])
         assert len(filtered_vacancies) == 1
         assert filtered_vacancies[0]["title"] == "Python Developer"
 
 
-def test_filter_vacancies_by_salary(json_file_handler):
+def test_filter_vacancies_by_salary(json_file_handler: JSONFileHandler) -> None:
     mock_data = json.dumps([
         {"id": 1, "title": "Python Developer", "salary": 100000},
         {"id": 2, "title": "Java Developer", "salary": 80000},
@@ -66,12 +69,12 @@ def test_filter_vacancies_by_salary(json_file_handler):
     ])
 
     with patch("builtins.open", mock_open(read_data=mock_data)):
-        filtered_vacancies = json_file_handler.filter_vacancies_by_salary((90000, 130000))
+        filtered_vacancies: List[Dict[str, Any]] = json_file_handler.filter_vacancies_by_salary((90000, 130000))
         assert len(filtered_vacancies) == 2
         assert all(v["salary"] >= 90000 and v["salary"] <= 130000 for v in filtered_vacancies)
 
 
-def test_load_data_empty_file(json_file_handler):
+def test_load_data_empty_file(json_file_handler: JSONFileHandler) -> None:
     with patch("builtins.open", mock_open(read_data='')):
-        data = json_file_handler._load_data()
+        data: List[Dict[str, Any]] = json_file_handler._load_data()
         assert data == []

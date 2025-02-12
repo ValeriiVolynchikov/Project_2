@@ -1,8 +1,7 @@
-import pytest
 from src.helpers import clean_html, parse_salary_range
 
 
-def test_clean_html():
+def test_clean_html() -> None:
     """Тестирует функцию clean_html."""
     # Примеры с HTML-тегами
     assert clean_html("<highlighttext>Python</highlighttext>") == "Python"
@@ -16,7 +15,7 @@ def test_clean_html():
     assert clean_html("") == "Описание отсутствует"  # Ожидаемое поведение для пустой строки
 
 
-def test_parse_salary_range():
+def test_parse_salary_range() -> None:
     """Тестирует функцию parse_salary_range."""
     # Корректный диапазон
     result = parse_salary_range("100000-200000")
@@ -24,12 +23,15 @@ def test_parse_salary_range():
 
     # Некорректный формат
     result = parse_salary_range("abc-def")
-    assert result == (0, float('inf'))
+    assert result == (0, float("inf"))
 
     # Отсутствие разделителя
     result = parse_salary_range("100000")
-    assert result == (0, float('inf'))
+    assert result == (0, float("inf"))
 
     # Диапазон с отрицательными числами
     result = parse_salary_range("-50000-150000")
-    assert result == (0, float('inf'))  # Функция должна игнорировать отрицательные числа <button class="citation-flag" data-index="1">
+    assert result == (
+        0,
+        float("inf"),
+    )  # Функция должна игнорировать отрицательные числа <button class="citation-flag" data-index="1">

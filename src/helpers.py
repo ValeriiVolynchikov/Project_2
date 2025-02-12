@@ -1,13 +1,14 @@
-# src/helpers.py
 import re
+from typing import Optional
 
-def clean_html(raw_html: str) -> str:
+
+def clean_html(raw_html: Optional[str]) -> str:
     """
     Удаляет HTML-теги из строки.
-    :param raw_html: Строка с HTML-тегами.
-    :return: Чистая строка без HTML-тегов.
+    :param raw_html: Строка с HTML-тегами или None.
+    :return: Чистая строка без HTML-тегов или "Описание отсутствует", если входная строка None.
     """
-    if not raw_html:
+    if raw_html is None or not raw_html:
         return "Описание отсутствует"
     clean_text = re.sub(r"<.*?>", "", raw_html)  # Удаляем все теги между <>
     return clean_text.strip()

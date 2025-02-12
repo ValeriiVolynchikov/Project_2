@@ -1,20 +1,24 @@
+from pathlib import Path
+from typing import Any, Dict
+
 import pytest
+
 from src.file_handler import JSONFileHandler
 from src.utils import save_vacancy_to_file
 
 
 @pytest.fixture
-def json_saver(tmp_path):
+def json_saver(tmp_path: Path) -> JSONFileHandler:
     """Фикстура для создания временного JSON-файла."""
     filename = tmp_path / "vacancies.json"
     saver = JSONFileHandler(filename=str(filename))
     return saver
 
 
-def test_save_vacancy_to_file(json_saver):
+def test_save_vacancy_to_file(json_saver: JSONFileHandler) -> None:
     """Тестирует функцию save_vacancy_to_file."""
     # Создаем тестовую вакансию
-    test_vacancy = {
+    test_vacancy: Dict[str, Any] = {
         "title": "Python Developer",
         "link": "https://example.com/python-dev",
         "salary": 100000,
@@ -30,5 +34,5 @@ def test_save_vacancy_to_file(json_saver):
     assert data[0]["title"] == "Python Developer"
 
     # Проверяем обработку некорректных данных
-    with pytest.raises(ValueError):
-        save_vacancy_to_file("Invalid Data", json_saver)
+    with pytest.raises(ValueError, match="Вакансия должна содержать поле 'title'."):
+        save_vacancy_to_file({"invalid": "data"}, json_saver)  # Передаем словарь без 'title'

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import requests
-from src.vacancy import Vacancy
 from src.helpers import clean_html
 from typing import List, Dict, Any
 from typing import cast
@@ -59,7 +58,6 @@ class HeadHunterAPI(APIHandler):
         # Явно указываем, что ответ является словарем
         return cast(Dict[str, Any], response.json())
 
-
     def get_vacancies(self, keyword: str) -> List[Dict[str, Any]]:
         """Получение вакансий с hh.ru по ключевому слову."""
         params = {"text": keyword, "per_page": 100}
@@ -69,8 +67,10 @@ class HeadHunterAPI(APIHandler):
                 {
                     "title": item.get("name", "Название не указано"),
                     "link": item.get("alternate_url", "Ссылка не указана"),
-                    "salary": item.get("salary", {}).get("from", None) if item.get("salary") else "Зарплата не указана",
-                    "description": clean_html(item.get("snippet", {}).get("requirement", "Описание отсутствует"))
+                    "salary": (
+                        item.get("salary", {}).get("from", None) if item.get("salary") else "Зарплата не указана"
+                    ),
+                    "description": clean_html(item.get("snippet", {}).get("requirement", "Описание отсутствует")),
                 }
                 for item in data.get("items", [])
             ]
