@@ -1,6 +1,7 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
 
 from src.helpers import clean_html
 
@@ -9,72 +10,85 @@ class FileHandler(ABC):
     """Абстрактный класс для работы с файлами."""
 
     @abstractmethod
-    def add_vacancy(self, vacancy_data: dict) -> None:
-        """Добавление вакансии в файл."""
+    def add_vacancy(self, vacancy_data: Dict[str, Any]) -> None:
+        """Добавляет вакансию в файл."""
         pass
 
     @abstractmethod
     def delete_vacancy(self, vacancy_id: int) -> None:
-        """Удаление вакансии из файла."""
+        """Удаляет вакансию из файла по ID."""
         pass
 
     @abstractmethod
-    def filter_vacancies(self, filter_word: str) -> list:
-        """Фильтрация вакансий по ключевым словам."""
+    def filter_vacancies(self, filter_words: List[str]) -> List[Dict[str, Any]]:
+        """Фильтрует вакансии по ключевым словам."""
+        pass
+
+    @abstractmethod
+    def filter_vacancies_by_salary(self, salary_range: Tuple[float, float]) -> List[Dict[str, Any]]:
+        """Фильтрует вакансии по диапазону зарплат."""
         pass
 
 
-class JSONFileHandler:
+class JSONFileHandler(FileHandler):
     """Класс для работы с JSON-файлами."""
 
     def __init__(self, filename: str = "data/vacancies.json") -> None:
         self._filename = filename
+        self._ensure_file_exists()
 
-    def _load_data(self) -> list[dict[str, Any]]:
-        """
-        Загружает данные из JSON-файла.
-        :return: Список словарей с данными о вакансиях.
-        """
+    def _ensure_file_exists(self) -> None:
+        """Создает файл, если он не существует."""
+        Path(self._filename).parent.mkdir(parents=True, exist_ok=True)
+        if not Path(self._filename).exists():
+            with open(self._filename, "w", encoding="utf-8") as file:
+                json.dump([], file)
+
+    def _load_data(self) -> List[Dict[str, Any]]:
+        """Загружает данные из JSON-файла."""
         try:
             with open(self._filename, "r", encoding="utf-8") as file:
-                content = file.read()
-                if not content:  # Проверка на пустой файл
-                    return []
-                return json.loads(content) if content else []
-        except FileNotFoundError:
+                data = json.load(file)
+                # Убедимся, что данные - это список словарей
+                if isinstance(data, list) and all(isinstance(item, dict) for item in data):
+                    return data
+                else:
+                    return []  # Возвращаем пустой список, если данные некорректны
+        except (FileNotFoundError, json.JSONDecodeError):
             return []
-        except json.JSONDecodeError:
-            return []  # Обработка ошибок декодирования JSON
 
-    def add_vacancy(self, vacancy_data: Dict) -> None:
-        """
-        Добавляет вакансию в JSON-файл.
-        :param vacancy_data: Словарь с данными о вакансии.
-        """
+    def _save_data(self, data: List[Dict[str, Any]]) -> None:
+        """Сохраняет данные в JSON-файл."""
+        with open(self._filename, "w", encoding="utf-8") as file:
+            json.dump(data, file, ensure_ascii=False, indent=4)
+
+    def add_vacancy(self, vacancy_data: Dict[str, Any]) -> None:
+        """Добавляет вакансию в JSON-файл."""
+
+        # Проверка на наличие необходимых полей
+        required_fields = ['title', 'link', 'salary', 'description']
+        for field in required_fields:
+            if field not in vacancy_data:
+                raise ValueError(f"Вакансия должна содержать поле '{field}'.")
+
+        # Если поле 'description' отсутствует, можно установить значение по умолчанию
+        vacancy_data["description"] = vacancy_data.get("description", "Описание отсутствует")
+
+        # Обработка HTML
+        vacancy_data["description"] = clean_html(vacancy_data["description"])
+
         data = self._load_data()
-
-        # Проверяем наличие обязательного поля 'title'
-        if 'title' not in vacancy_data:
-            raise ValueError("Вакансия должна содержать поле 'title'.")
-
-        # Очищаем описание перед добавлением
-        vacancy_data["description"] = clean_html(vacancy_data.get("description", ""))
-
-        if vacancy_data not in data:  # Проверяем отсутствие дублей
+        if vacancy_data not in data:  # Проверка на дубликаты
             data.append(vacancy_data)
             self._save_data(data)
-            print(f"Вакансия {vacancy_data['title']} успешно добавлена.")
+            print(f"Вакансия '{vacancy_data['title']}' успешно добавлена.")
 
     def delete_vacancy(self, vacancy_id: int) -> None:
-        """
-        Удаляет вакансию из JSON-файла по ID.
-        :param vacancy_id: ID вакансии для удаления.
-        """
+        """Удаляет вакансию из JSON-файла по ID."""
         data = self._load_data()
-        filtered_data = [v for v in data if v.get("id") != vacancy_id]
-        if len(filtered_data) < len(data):
-            print(f"Вакансия с ID {vacancy_id} успешно удалена.")
-            self._save_data(filtered_data)  # Сохраняем обновленный список
+        data = [v for v in data if v.get("id") != vacancy_id]
+        self._save_data(data)
+        print(f"Вакансия с ID {vacancy_id} удалена.")
 
     def filter_vacancies(self, filter_words: List[str]) -> List[Dict]:
         """
@@ -98,23 +112,16 @@ class JSONFileHandler:
             )
         ]
 
-    def filter_vacancies_by_salary(self, salary_range: tuple) -> List[Dict]:
+    def filter_vacancies_by_salary(self, salary_range: Tuple[float, float]) -> List[Dict[str, Any]]:
         """
-        Фильтрует вакансии по указанному диапазону зарплат.
+        Фильтрует вакансии по диапазону зарплат.
         :param salary_range: Кортеж (min_salary, max_salary).
         :return: Список отфильтрованных вакансий.
         """
         data = self._load_data()
         min_salary, max_salary = salary_range
-        return [
-            v for v in data
-            if isinstance(v["salary"], (int, float)) and min_salary <= v["salary"] <= max_salary
-        ]
 
-    def _save_data(self, data: List[Dict]) -> None:
-        """
-        Сохраняет данные в JSON-файл.
-        :param data: Список словарей с данными о вакансиях.
-        """
-        with open(self._filename, "w", encoding="utf-8") as file:
-            json.dump(data, file, ensure_ascii=False, indent=4)
+        return [
+            v for v in data if isinstance(v, dict) and isinstance(v.get("salary"), (float, int)) and min_salary <= v[
+                "salary"] <= max_salary
+        ]

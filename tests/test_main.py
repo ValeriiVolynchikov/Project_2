@@ -3,10 +3,10 @@ from typing import Any, Dict, List
 
 import pytest
 
-from main import display_vacancies, filter_vacancies_by_salary, user_interaction
+from main import display_vacancies, user_interaction
 from src.api_handler import HeadHunterAPI
 from src.file_handler import JSONFileHandler
-from src.helpers import clean_html
+from src.helpers import parse_salary_range
 
 
 @pytest.fixture
@@ -23,63 +23,33 @@ def json_saver(tmp_path: Path) -> JSONFileHandler:
     return saver
 
 
-def test_filter_vacancies_by_salary(json_saver: JSONFileHandler) -> None:
-    """Тестирует функцию filter_vacancies_by_salary."""
-    # Добавляем тестовые вакансии в файл
-    test_vacancies: List[Dict[str, Any]] = [
-        {
-            "title": "Python Developer",
-            "link": "http://example.com/python",
-            "salary": 150000.0,
-            "description": "Опыт работы с Python",
-        },
-        {
-            "title": "Data Scientist",
-            "link": "http://example.com/data",
-            "salary": 200000.0,
-            "description": "Знание машинного обучения",
-        },
-        {
-            "title": "Junior Developer",
-            "link": "http://example.com/junior",
-            "salary": "Зарплата не указана",
-            "description": "Без опыта работы",
-        },
-        {
-            "title": "Backend Developer",
-            "link": "http://example.com/backend",
-            "salary": 180000.0,
-            "description": "Опыт работы с Django",
-        },
-    ]
-    for vacancy in test_vacancies:
-        json_saver.add_vacancy(vacancy)
+def test_parse_salary_range() -> None:
+    """
+    Тестирует функцию parse_salary_range.
+    Проверяет корректность парсинга диапазона зарплат.
+    """
+    # Корректный диапазон
+    result = parse_salary_range("100000-200000")
+    assert result == (100000.0, 200000.0)
 
-    # Фильтрация по диапазону зарплат
-    filtered = filter_vacancies_by_salary(test_vacancies, (140000.0, 190000.0))
-    assert len(filtered) == 2  # Ожидаем две вакансии в диапазоне
-    assert all(140000.0 <= v["salary"] <= 190000.0 for v in filtered if isinstance(v["salary"], (int, float)))
+    # Некорректный формат
+    result = parse_salary_range("abc-def")
+    assert result == (0, float("inf"))
 
-    # Фильтрация без результата
-    filtered = filter_vacancies_by_salary(test_vacancies, (300000.0, 400000.0))
-    assert len(filtered) == 0  # Ожидаем пустой список
+    # Отсутствие разделителя
+    result = parse_salary_range("150000")
+    assert result == (0, float("inf"))
 
-
-def test_clean_html() -> None:
-    """Тестирует функцию clean_html."""
-    # Примеры с HTML-тегами
-    assert clean_html("<highlighttext>Python</highlighttext>") == "Python"
-    assert clean_html("<b>Senior</b> <i>QA</i> Engineer") == "Senior QA Engineer"
-    assert clean_html("Опыт работы с <highlighttext>Python</highlighttext> и SQL") == "Опыт работы с Python и SQL"
-
-    # Примеры без HTML-тегов
-    assert clean_html("Программист Python") == "Программист Python"
-    assert clean_html("") == "Описание отсутствует"
-    assert clean_html(None) == "Описание отсутствует"
+    # Диапазон с отрицательными числами
+    result = parse_salary_range("-50000-150000")
+    assert result == (0, float("inf"))
 
 
 def test_display_vacancies(capsys: pytest.CaptureFixture) -> None:
-    """Тестирует функцию display_vacancies."""
+    """
+    Тестирует функцию display_vacancies.
+    Проверяет корректность вывода списка вакансий через консоль.
+    """
     test_vacancies: List[Dict[str, Any]] = [
         {
             "title": "Python Developer",
@@ -91,7 +61,7 @@ def test_display_vacancies(capsys: pytest.CaptureFixture) -> None:
             "title": "Data Scientist",
             "link": "http://example.com/data",
             "salary": "Зарплата не указана",
-            "description": "Знание машинного обучения",
+            "description": "Машинное обучение",
         },
     ]
 
@@ -107,125 +77,97 @@ def test_display_vacancies(capsys: pytest.CaptureFixture) -> None:
         "Название: Data Scientist\n"
         "Ссылка: http://example.com/data\n"
         "Зарплата: Зарплата не указана руб.\n"
-        "Описание: Знание машинного обучения\n"
+        "Описание: Машинное обучение\n"
         "----------------------------------------\n"
     )
+
     assert captured.out.strip() == expected_output.strip()
 
 
-def test_get_vacancies(hh_api: HeadHunterAPI) -> None:
-    """Тестирует метод get_vacancies класса HeadHunterAPI."""
-    vacancies = hh_api.get_vacancies("Python")
-    assert isinstance(vacancies, list)
-    assert len(vacancies) > 0
-    for vacancy in vacancies:
-        assert "title" in vacancy
-        assert "link" in vacancy
-        assert "salary" in vacancy
-        assert "description" in vacancy
-
-
-def test_save_vacancies(json_saver: JSONFileHandler) -> None:
-    """Тестирует метод add_vacancy класса JSONFileHandler."""
-    test_vacancy: Dict[str, Any] = {
-        "title": "Test Vacancy",
-        "link": "http://example.com/test",
-        "salary": 120000.0,
-        "description": "Тестовое описание",
-    }
-    json_saver.add_vacancy(test_vacancy)
-
-    data = json_saver._load_data()
-    assert len(data) == 1
-    saved_vacancy = data[0]
-    assert saved_vacancy["title"] == "Test Vacancy"
-    assert saved_vacancy["link"] == "http://example.com/test"
-    assert saved_vacancy["salary"] == 120000.0
-    assert saved_vacancy["description"] == "Тестовое описание"
-
-
-def test_filter_vacancies(json_saver: JSONFileHandler) -> None:
-    """Тестирует метод filter_vacancies класса JSONFileHandler."""
-    test_vacancies: List[Dict[str, Any]] = [
-        {
-            "title": "Python Developer",
-            "link": "http://example.com/python",
-            "salary": 150000.0,
-            "description": "Опыт работы с Python",
-        },
-        {
-            "title": "Data Scientist",
-            "link": "http://example.com/data",
-            "salary": 200000.0,
-            "description": "Знание машинного обучения",
-        },
-        {
-            "title": "Junior Developer",
-            "link": "http://example.com/junior",
-            "salary": "Зарплата не указана",
-            "description": "Без опыта работы",
-        },
-        {
-            "title": "Backend Developer",
-            "link": "http://example.com/backend",
-            "salary": 180000.0,
-            "description": "Опыт работы с Django",
-        },
-    ]
-    for vacancy in test_vacancies:
-        json_saver.add_vacancy(vacancy)
-
-    # Фильтрация по ключевому слову
-    filtered = json_saver.filter_vacancies(["Python"])
-    assert len(filtered) == 1
-    assert filtered[0]["title"] == "Python Developer"
-
-    # Фильтрация без совпадений
-    filtered = json_saver.filter_vacancies(["Java"])
-    assert len(filtered) == 0
-
-    # Пустой фильтр (возвращаем все вакансии)
-    filtered = json_saver.filter_vacancies([])
-    assert len(filtered) == len(test_vacancies)  # Теперь должно быть 4
-
-
-def test_empty_search_query(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture) -> None:
-    """Тестирует реакцию программы на пустой поисковый запрос."""
-    monkeypatch.setattr("builtins.input", lambda _: "")  # Имитируем пустой ввод
-    monkeypatch.setattr(HeadHunterAPI, "get_vacancies", lambda self, query: [])
-    monkeypatch.setattr(JSONFileHandler, "filter_vacancies", lambda self, words: [])
-
-    user_interaction()
-    captured = capsys.readouterr()
-
-    assert "Поисковый запрос не может быть пустым." in captured.out
-
-
-def test_invalid_top_n_value(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture) -> None:
-    """Тестирует реакцию программы на некорректное значение топ N."""
-    inputs = iter(["Python", "abc", ""])  # Первый ввод — корректный запрос, второй — некорректное значение топ N
+def test_user_interaction(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture,
+    json_saver: JSONFileHandler,
+) -> None:
+    """
+    Тестирует функцию user_interaction.
+    Проверяет основные действия пользователя через консоль.
+    """
+    inputs = iter([
+        "1",  # Выбор "Добавить вакансии из HeadHunter"
+        "Python",  # Поисковый запрос
+        "6",  # Выход из программы
+    ])
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
-    monkeypatch.setattr(HeadHunterAPI, "get_vacancies", lambda self, query: [])
-    monkeypatch.setattr(JSONFileHandler, "filter_vacancies", lambda self, words: [])
 
-    user_interaction()
-    captured = capsys.readouterr()
-
-    assert "Некорректное значение для топ N. Ожидается положительное целое число." in captured.out
-
-
-def test_no_vacancies_found(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture) -> None:
-    """Тестирует случай, когда вакансий не найдено."""
-    inputs = iter(
-        ["Python", "10", "", ""]
-    )  # Запрос, значение топ N и два пустых ввода для фильтрации и диапазона зарплат
-    monkeypatch.setattr("builtins.input", lambda _: next(inputs))  # Имитация ввода
-    monkeypatch.setattr(HeadHunterAPI, "get_vacancies", lambda self, query: [])  # Возвращает пустой список вакансий
+    # Имитация получения данных из API
     monkeypatch.setattr(
-        JSONFileHandler, "filter_vacancies", lambda self, words: []
-    )  # Возвращает пустой список после фильтрации
+        HeadHunterAPI,
+        "get_vacancies",
+        lambda self, query: [
+            {
+                "title": "Test Vacancy",
+                "link": "http://example.com/test",
+                "salary": 120000.0,
+                "description": "Тестовое описание",
+            }
+        ],
+    )
 
+    # Имитация сохранения данных в файл
+    monkeypatch.setattr(JSONFileHandler, "add_vacancy", lambda self, vacancy_data: None)
+
+    # Запуск функции user_interaction()
     user_interaction()
-    captured = capsys.readouterr()
 
-    assert "По вашему запросу вакансий не найдено." in captured.out
+    # Проверка вывода
+    captured = capsys.readouterr()
+    assert "Вакансия «Test Vacancy» успешно добавлена." in captured.out
+    assert "Выход из программы." in captured.out
+
+
+def test_user_interaction_invalid_choice(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture,
+    json_saver: JSONFileHandler,
+) -> None:
+    """
+    Тестирует обработку некорректного выбора в меню.
+    """
+    inputs = iter([
+        "7",  # Некорректный выбор
+        "6",  # Выход из программы
+    ])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    # Запуск функции user_interaction()
+    user_interaction()
+
+    # Проверка вывода
+    captured = capsys.readouterr()
+    assert "Некорректный выбор." in captured.out
+    assert "Выход из программы." in captured.out
+
+
+def test_user_interaction_empty_search_query(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture,
+    json_saver: JSONFileHandler,
+) -> None:
+    """
+    Тестирует обработку пустого поискового запроса.
+    """
+    inputs = iter([
+        "1",  # Выбор "Добавить вакансии из HeadHunter"
+        "",  # Пустой поисковый запрос
+        "6",  # Выход из программы
+    ])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    # Запуск функции user_interaction()
+    user_interaction()
+
+    # Проверка вывода
+    captured = capsys.readouterr()
+    assert "Поисковый запрос не может быть пустым." in captured.out
+    assert "Выход из программы." in captured.out

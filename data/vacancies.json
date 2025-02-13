@@ -2992,5 +2992,47 @@
         "link": "https://hh.ru/vacancy/115707142",
         "salary": "Зарплата не указана",
         "description": "Знания и навыки: Основы программирования на одном или нескольких языках (например, PHP, Python, Java, C#, Ruby). Знание основ работы с..."
+    },
+    {
+        "title": "Тестировщик / QA инженер",
+        "link": "https://hh.ru/vacancy/117161804",
+        "salary": "Зарплата не указана",
+        "description": "...3х лет. Технический английский. Опыт работы с CI (gitlab-ci). Опыт работы с selenium, python. Опыт работы с Docker."
+    },
+    {
+        "title": "Junior Software engineer",
+        "link": "https://hh.ru/vacancy/117153148",
+        "salary": "Зарплата не указана",
+        "description": "Знания и навыки работы с SQL/Pl SQL. Знания и навыки работы с генераторами отчетов. Понимание JSON, XML. Знание Python."
+    },
+    {
+        "title": "Backend-разработчик",
+        "link": "https://hh.ru/vacancy/117143190",
+        "salary": 1000.0,
+        "description": "От 2 лет коммерческого опыта в backend-разработке на Python. Уверенные знания FastAPI, SQLAlchemy, Pydantic. Опыт работы с PostgreSQL, Redis..."
+    },
+    {
+        "title": "Руководитель группы тестирования (QA Lead)",
+        "link": "https://hh.ru/vacancy/117038979",
+        "salary": "Зарплата не указана",
+        "description": "Технические навыки: Опыт автоматизации тестирования на Java (от 3 лет). Знание JUnit5, Allure TestOps и Yandex Tracker (или аналогичных..."
+    },
+    {
+        "title": "Python разработчик",
+        "link": "https://hh.ru/vacancy/117164677",
+        "salary": "Зарплата не указана",
+        "description": "Docker + docker compose v2. Уверенно программируете на Python и имеете опыт разработки от 3 лет. Хорошо знакомы с..."
+    },
+    {
+        "title": "QA-инженер (frontend)",
+        "link": "https://hh.ru/vacancy/117124535",
+        "salary": "Зарплата не указана",
+        "description": "Есть опыт разработки автоматизированных сценариев на JavaScript/TypeScript, Java, Kotlin, Python или C#. Есть опыт работы с DevTools, снифферами трафика..."
+    },
+    {
+        "title": "Test Vacancy",
+        "link": "http://example.com/test",
+        "salary": 120000.0,
+        "description": "Тестовое описание"
     }
 ]
