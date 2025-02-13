@@ -1,0 +1,8 @@
+[
+    {
+        "title": "Test Vacancy",
+        "link": "http://example.com/test",
+        "salary": 120000.0,
+        "description": "Тестовое описание"
+    }
+]
